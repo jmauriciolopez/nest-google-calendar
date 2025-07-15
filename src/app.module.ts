@@ -15,8 +15,8 @@ import { GoogleModule } from './google/google.module';
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         host: config.get('DATABASE_HOST'),
-        port: +config.get<number>('DATABASE_PORT'),
-        username: config.get('DATABASE_USER'),
+        port: config.get<number>('DATABASE_PORT'),
+        username: config.get('DATABASE_USERNAME'),
         password: config.get('DATABASE_PASSWORD'),
         database: config.get('DATABASE_NAME'),
         autoLoadEntities: true,

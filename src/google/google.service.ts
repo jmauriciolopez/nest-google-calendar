@@ -23,6 +23,16 @@ export class GoogleService {
     });
   }
 
+async getUserProfile(tokens: any) {
+  this.oauth2Client.setCredentials(tokens);
+  const oauth2 = google.oauth2({ version: 'v2', auth: this.oauth2Client });
+  const { data } = await oauth2.userinfo.get();
+  return {
+    email: data.email,
+    name: data.name,
+  };
+}
+
   async getTokens(code: string) {
     const { tokens } = await this.oauth2Client.getToken(code);
     return tokens;

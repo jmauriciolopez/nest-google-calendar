@@ -12,5 +12,8 @@ export class User {
 
   @Column()
   name: string;
+
+  @Column({ select: false }) // 👈 oculta el password por defecto en consultas
+  password: string;
 }
 

@@ -2,10 +2,14 @@
 
 import { Controller, Get, Query } from '@nestjs/common';
 import { GoogleService } from './google.service';
+import { UsersService } from '../users/users.service';
 
 @Controller('google')
 export class GoogleController {
-  constructor(private readonly googleService: GoogleService) {}
+  constructor(
+    private readonly googleService: GoogleService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get('auth-url')
   getAuthUrl(): string {
@@ -15,12 +19,17 @@ export class GoogleController {
   @Get('redirect')
   async handleRedirect(@Query('code') code: string) {
     const tokens = await this.googleService.getTokens(code);
-    return tokens;
-  }
 
-  @Get('events')
-  async getEvents(@Query('access_token') access_token: string, @Query('refresh_token') refresh_token: string) {
-    const tokens = { access_token, refresh_token };
-    return this.googleService.listEvents(tokens);
+    // Recuperar datos del perfil
+    const profile = await this.googleService.getUserProfile(tokens);
+
+    // Guardar usuario (o actualizar si ya existe)
+    const user = await this.usersService.createOrUpdate(profile.email as string, profile.name as string);
+
+    return {
+      message: 'Usuario autenticado con Google',
+      user,
+      tokens,
+    };
   }
 }
