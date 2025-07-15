@@ -5,13 +5,23 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // app.enableCors({
+  //   origin: '*',
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   allowedHeaders: 'Content-Type, Accept,Authorization',
+  // });
   app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept',
-  });
+  origin: 'http://localhost:3000', // 👈 frontend React
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // 👈 incluí Authorization explícitamente
+});
+//   app.enableCors({
+//     origin: true, // permite cualquier origen
+//   allowedHeaders: '*',
+// });
   const config = new DocumentBuilder()
-    .setTitle('API ejemplo')
+    .setTitle('Backend NestJS con Google Calendar')
     .setDescription('Documentación con Swagger')
     .setVersion('1.0')
     .addBearerAuth()
