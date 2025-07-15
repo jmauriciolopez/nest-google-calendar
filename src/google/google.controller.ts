@@ -26,7 +26,8 @@ export class GoogleController {
 
     // Recuperar datos del perfil
     const profile = await this.googleService.getUserProfile(tokens);
-
+console.log('tokens:', tokens);
+console.log('profile:', profile);
     // Guardar usuario (o actualizar si ya existe)
     const user = await this.usersService.createOrUpdate(profile.email as string, profile.name as string);
 

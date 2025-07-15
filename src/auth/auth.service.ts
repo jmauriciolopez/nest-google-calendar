@@ -1,16 +1,18 @@
 // src/auth/auth.service.ts
 
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from './dto/register.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+      private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -72,4 +74,52 @@ async logingoogle(googleToken: string): Promise<{ access_token: string }> {
     },
   };
 }
+async googleLogin(req: any) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from Google');
+    }
+
+    const payload = {
+      email: req.user.email,
+      sub: req.user.googleId,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      picture: req.user.picture,
+      accessToken: req.user.accessToken,
+      refreshToken: req.user.refreshToken,
+      provider: 'google',
+      iat: Math.floor(Date.now() / 1000),
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        picture: req.user.picture,
+      },
+    };
+  }
+
+  async refreshGoogleToken(refreshToken: string) {
+    // Implementar refresh de tokens de Google si es necesario
+    const { google } = require('googleapis');
+    
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get<string>('GOOGLE_CLIENT_ID'),
+      this.configService.get<string>('GOOGLE_CLIENT_SECRET'),
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: refreshToken,
+    });
+
+    try {
+      const { credentials } = await oauth2Client.refreshAccessToken();
+      return credentials.access_token;
+    } catch (error) {
+      throw new UnauthorizedException('Token refresh failed');
+    }
+  }
 }
