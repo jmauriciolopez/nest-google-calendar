@@ -25,6 +25,7 @@ async function bootstrap() {
     .setTitle('Backend NestJS con Google Calendar')
     .setDescription('Documentación con Swagger')
     .setVersion('1.0')
+     .addTag('authorization') // importante
     .addBearerAuth()
     .build();
 

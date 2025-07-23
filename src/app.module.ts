@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { GoogleModule } from './google/google.module';
 import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { CalendarModule } from './calendar/calendar.module';
 
 
 @Module({
@@ -31,6 +32,7 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
     UsersModule,
     AuthModule,
     GoogleModule,
+    CalendarModule,
   ],
    providers: [
     {
