@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CalendarService } from './calendar.service';
 import { CalendarController } from './calendar.controller';
-//import { GoogleModule } from '../google/google.module';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Module({
- // imports: [GoogleModule],
   controllers: [CalendarController],
-  providers: [CalendarService],
+  providers: [CalendarService,JwtAuthGuard],
   exports: [CalendarService],
 })
 export class CalendarModule {}

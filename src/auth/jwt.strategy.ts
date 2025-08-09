@@ -8,20 +8,22 @@ import { passportJwtSecret } from 'jwks-rsa';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService) {
+  constructor( configService: ConfigService) {
+   const secretOrKey = configService.get('JWT_SECRET');
+    if (!secretOrKey) {
+      throw new Error('JWT_SECRET is not set in the configuration');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-       audience: '409827581778-i2d2ffkmrj2qlh3pnunlf5u5snc1c4g2.apps.googleusercontent.com',
-      issuer: 'https://accounts.google.com',
-      algorithms: ['RS256'],
-      secretOrKeyProvider: passportJwtSecret({
-        jwksUri: 'https://www.googleapis.com/oauth2/v3/certs',
-      }),
+      ignoreExpiration: false,
+      secretOrKey
+
     });
   }
 
   async validate(payload: any) {
     return { userId: payload.sub, 
+      name: payload.name, 
       email: payload.email,
       accessToken: payload.accessToken,
       refreshToken: payload.refreshToken };

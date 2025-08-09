@@ -2,11 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards ,Req} from
 import { CalendarService } from './calendar.service';
 import { CreateEventDto  } from './dto/create-calendar.dto';
 import { UpdateEventDto } from './dto/update-calendar.dto';
-//import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
-import { AuthGuard } from '@nestjs/passport';
+ 
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
-
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+ 
+ 
 
 interface AuthenticatedUser {
   email: string;
@@ -22,8 +23,7 @@ interface RequestWithUser extends Request {
 
 @ApiTags('calendar')
 @Controller('calendar')
-//@UseGuards(AuthGuard('jwt'))
-@UseGuards(AuthGuard('google'))
+@UseGuards(JwtAuthGuard)
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 

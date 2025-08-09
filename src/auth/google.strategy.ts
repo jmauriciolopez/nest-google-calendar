@@ -50,7 +50,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         googleId: profile.id,
         accessToken,
         refreshToken,
-        provider: 'google',
+        provider: 'google',   //ver este parametro
       };
 
       // Opcional: Guardar usuario en base de datos

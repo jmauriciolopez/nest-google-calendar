@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from './dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,40 @@ export class AuthService {
       private configService: ConfigService,
   ) {}
 
+  googleLogin(req) {
+    if (!req.user) {
+      return {
+      message: 'No user from google',
+      user: req.user,
+    }
+     // return 'No user from google';
+    }
+
+    return {
+      message: 'User information from google',
+      user: req.user,
+    };
+  }
+
+  generateJwt(user: any): string {
+    if (!user || !user.googleId  || !user.email) {
+      throw new Error('Invalid user data for JWT generation');
+    }
+
+    const payload = {
+      sub: user.googleId,
+      email: user.email,
+      name: user.lastName && user.firstName
+        ? `${user.lastName} ${user.firstName}`
+        : user.name || 'Unknown User',
+        accessToken: user.accessToken
+    };
+
+    return this.jwtService.sign(payload);
+  }
+
+  
+  
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
     if (!user) return null;
@@ -75,7 +110,7 @@ async logingoogle(googleToken: string): Promise<{ access_token: string }> {
     },
   };
 }
-async googleLogin(req: any) {
+async googleLoginold(req: any) {
     if (!req.user) {
       throw new UnauthorizedException('No user from Google');
     }
