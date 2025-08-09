@@ -1,4 +1,4 @@
-import { Injectable,InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Injectable,InternalServerErrorException, BadRequestException, Options } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-calendar.dto';
 import { UpdateEventDto } from './dto/update-calendar.dto';
 import { ConfigService } from '@nestjs/config';
@@ -21,11 +21,15 @@ export class CalendarService {
       const res = await calendar.events.list({
         calendarId: 'primary', // 'primary' se refiere al calendario principal del usuario
         timeMin: new Date().toISOString(),
-        maxResults: 10,
+        maxResults: 20,
         singleEvents: true,
-        orderBy: 'startTime',
-      });
-      return res.data.items;
+        orderBy: 'startTime'
+      },);
+     const events = res.data.items || [];
+    const filteredEvents = events.filter(event => {
+      return event.eventType !== 'birthday';
+    });
+       return filteredEvents;
     } catch (error) {
       console.error('Error al listar eventos:', error);
       throw new InternalServerErrorException('No se pudieron obtener los eventos del calendario.');
@@ -52,6 +56,12 @@ export class CalendarService {
           dateTime: createEventDto.end.dateTime,
           timeZone: createEventDto.end.timeZone,
         },
+        attendees: [
+      { email: 'stnea18@gmail.com' }, // Aquí agregás el invitado
+    ],
+    reminders: {
+      useDefault: true,
+    },
       };
 
       const res = await calendar.events.insert({

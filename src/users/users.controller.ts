@@ -20,7 +20,7 @@ import {
   UseInterceptors,
   UnauthorizedException
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+//import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -34,7 +34,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get('me')
   getProfile(@Request() req): UserResponseDto {
   try {
@@ -43,7 +43,7 @@ export class UsersController {
         throw new UnauthorizedException('Usuario no autenticado');
       }
       
-      console.log('Usuario autenticado:', req.user); // Corrección del console.log
+   //   console.log('Usuario autenticado:', req.user); // Corrección del console.log
       return new UserResponseDto(req.user);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -53,7 +53,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @Get()
   async getAll(): Promise<UserResponseDto[]> {
     try {
@@ -64,7 +64,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findById(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto> {
     try {
@@ -87,7 +87,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @Get('email/:email')
   async findByEmail(@Param('email') email: string): Promise<UserResponseDto> {
     try {
@@ -112,7 +112,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async createOrUpdate(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -131,7 +131,7 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @Put(':id')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async updateUser(

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsObject, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, IsObject, ValidateNested, IsEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // DTO para el objeto de fecha/hora del evento
@@ -19,6 +19,7 @@ export class CreateEventDto {
   summary: string; // Título del evento
 
   @IsString()
+  @IsEmpty()
   description: string; // Descripción del evento
 
   @IsObject()
