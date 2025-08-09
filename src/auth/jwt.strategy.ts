@@ -1,6 +1,6 @@
 // src/auth/jwt.strategy.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -25,7 +25,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return { userId: payload.sub, 
       name: payload.name, 
       email: payload.email,
+      name: payload.name,
       accessToken: payload.accessToken,
-      refreshToken: payload.refreshToken };
+      refreshToken: payload.refreshToken 
+    };
   }
 }
