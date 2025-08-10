@@ -18,18 +18,25 @@ import {
   ValidationPipe,
   ClassSerializerInterceptor,
   UseInterceptors,
-  UnauthorizedException
+  UnauthorizedException,
+  Delete
 } from '@nestjs/common';
 //import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { User } from './user.entity';
+//import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { AuthApikeyGuard } from 'src/auth/authapikey';
 
 @ApiTags('users')
+@ApiHeader({
+	name: 'apikey',
+	description: 'API key',
+})
 @Controller('users')
+@UseGuards(AuthApikeyGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -119,7 +126,9 @@ export class UsersController {
     try {
       const user = await this.usersService.createOrUpdate(
         createUserDto.email,
-        createUserDto.name
+        
+        createUserDto.lastName|| '',
+        createUserDto.firstName || ''
       );
 
       return new UserResponseDto(user);
@@ -151,7 +160,8 @@ export class UsersController {
       // Actualizar solo los campos proporcionados
       const updatedUser = await this.usersService.createOrUpdate(
         existingUser.email,
-        updateUserDto.name || existingUser.name
+         updateUserDto.lastName ||  existingUser.lastName,
+        updateUserDto.firstName ||  existingUser.firstName
       );
 
       return new UserResponseDto(updatedUser);
@@ -162,4 +172,24 @@ export class UsersController {
       throw new InternalServerErrorException('Error al actualizar el usuario');
     }
   }
+  @Delete(':id')
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      if (id <= 0) {
+        throw new BadRequestException('El ID debe ser un número positivo');
+      }
+
+      const user = await this.usersService.findById(id);
+      if (!user) {
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      }
+
+      await this.usersService.deleteUser(id);
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al eliminar el usuario');
+    }
+}
 }

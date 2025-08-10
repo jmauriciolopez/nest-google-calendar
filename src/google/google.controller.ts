@@ -29,11 +29,11 @@ export class GoogleController {
 //console.log('tokens:', tokens);
 //console.log('profile:', profile);
     // Guardar usuario (o actualizar si ya existe)
-    const user = await this.usersService.createOrUpdate(profile.email as string, profile.name as string);
+   // const user = await this.usersService.createOrUpdate(profile.email as string, profile.name as string);
 
     return {
       message: 'Usuario autenticado con Google',
-      user,
+    //  user,
       tokens,
     };
   }
@@ -41,8 +41,8 @@ export class GoogleController {
 async googleAuth(@Body() body: { token: string }) {
   const googleUser = await this.googleService.verifyGoogleToken(body.token);
 
-  const user = await this.usersService.createOrUpdate(googleUser.email || '', googleUser.name);
+ // const user = await this.usersService.createOrUpdate(googleUser.email || '', googleUser.name);
 
-  return this.authService.login(user); // retorna access_token firmado por vos
+  return this.authService.login(googleUser); // retorna access_token firmado por vos
 }
 }

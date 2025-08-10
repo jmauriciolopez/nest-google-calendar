@@ -1,6 +1,6 @@
 // src/users/users.service.ts
 
-import { Injectable ,Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -9,11 +9,11 @@ import { UserNotFoundException, UserAlreadyExistsException } from '../common/exc
 
 @Injectable()
 export class UsersService {
-   private readonly logger = new Logger(UsersService.name);
+  private readonly logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async findByEmail(email: string): Promise<User | null> {
     try {
@@ -33,21 +33,24 @@ export class UsersService {
     }
   }
 
-  async createOrUpdate(email: string, name?: string): Promise<User> {
+  async createOrUpdate(email: string, 
+    lastName: string, firstName: string): Promise<User> {
     try {
       let user = await this.findByEmail(email);
-      
+
       if (!user) {
-        user = this.usersRepository.create({ email, name });
+        user = this.usersRepository.create({ email, password: '', lastName, firstName });
         this.logger.log(`Creando nuevo usuario: ${email}`);
       } else {
         // Actualizar solo si hay cambios
-        if (name && name !== user.name) {
-          user.name = name;
-          this.logger.log(`Actualizando usuario: ${email}`);
+        if (lastName !== user.lastName) {
+          user.lastName = lastName;
+        }
+        if (firstName !== user.firstName) {
+          user.firstName = firstName;
         }
       }
-      
+
       return await this.usersRepository.save(user);
     } catch (error) {
       this.logger.error(`Error al crear/actualizar usuario: ${email}`, error.stack);
@@ -78,20 +81,26 @@ export class UsersService {
       throw error;
     }
   }
-  async create(data: { email: string; password: string; name?: string }): Promise<User> {
-  const existingUser = await this.findByEmail(data.email);
+  async create(data: {
+    email: string;
+    password: string;
+    lastName: string;
+    firstName: string
+  }): Promise<User> {
+    const existingUser = await this.findByEmail(data.email);
 
-  if (existingUser) {
-    throw new UserAlreadyExistsException(data.email);
+    if (existingUser) {
+      throw new UserAlreadyExistsException(data.email);
+    }
+
+    const newUser = this.usersRepository.create({
+      email: data.email,
+      password: data.password,
+      lastName: data.lastName,
+      firstName: data.firstName,
+    });
+
+    return this.usersRepository.save(newUser);
   }
-
-  const newUser = this.usersRepository.create({
-    email: data.email,
-    password: data.password,
-    name: data.name,
-  });
-
-  return this.usersRepository.save(newUser);
-}
 
 }

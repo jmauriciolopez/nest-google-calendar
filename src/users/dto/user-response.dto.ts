@@ -2,7 +2,9 @@ import { Exclude } from 'class-transformer';
 export class UserResponseDto {
   id: number;
   email: string;
-  name?: string;
+  lastName?: string;
+  firstName?: string;
+  middlename?: string;
   createdAt: Date;
   updatedAt: Date;
 

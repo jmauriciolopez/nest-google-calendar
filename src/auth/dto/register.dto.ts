@@ -14,13 +14,17 @@ export class RegisterDto {
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
   password: string;
 
-  @IsString()
-//   @Matches('password', {
-//     message: 'Las contraseñas no coinciden',
-//   })
+   @IsString()
+  //   @Matches('password', {
+  //     message: 'Las contraseñas no coinciden',
+  //   })
   confirmPassword: string;
 
   @IsOptional()
   @IsString()
-  name?: string;
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName: string;
 }

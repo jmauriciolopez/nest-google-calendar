@@ -79,7 +79,7 @@ async logingoogle(googleToken: string): Promise<{ access_token: string }> {
   }
 
   async register(registerDto: RegisterDto) {
-  const { email, password, name } = registerDto;
+  const { email, password, confirmPassword, firstName, lastName} = registerDto;
 
   // Verificar si el usuario ya existe
   const existingUser = await this.usersService.findByEmail(email);
@@ -94,7 +94,8 @@ async logingoogle(googleToken: string): Promise<{ access_token: string }> {
   const newUser = await this.usersService.create({
     email,
     password: hashedPassword,
-    name,
+    lastName,
+    firstName: firstName || '', // Asegurarse de que firstname no sea undefined
   });
 
   // Generar token
@@ -106,7 +107,8 @@ async logingoogle(googleToken: string): Promise<{ access_token: string }> {
     user: {
       id: newUser.id,
       email: newUser.email,
-      name: newUser.name,
+      lastName: newUser.lastName ,
+      firstName: newUser.firstName && newUser.firstName,
     },
   };
 }
