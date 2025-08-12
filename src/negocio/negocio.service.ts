@@ -22,12 +22,15 @@ export class NegocioService {
   async create(createNegocioDto: CreateNegocioDto): Promise<Negocio> {
     try {
       // Create the user associated with the negocio
-      const user = await this.usersService.create({
-        email: createNegocioDto.email,
-        password: '', // You might want to generate a random password or handle this differently
-        firstName: createNegocioDto.firstName,
-        lastName: createNegocioDto.lastName,
-      });
+       let user = await this.usersService.findByEmail(createNegocioDto.email);
+      if (!user) {
+        user = await this.usersService.createOrUpdate(
+          createNegocioDto.email,
+          createNegocioDto.lastName,
+          createNegocioDto.firstName,
+        );
+      }
+ 
 
       // Create the negocio
       const negocio = this.negocioRepository.create({
